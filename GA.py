@@ -8,7 +8,7 @@ from ioh import get_problem, logger, ProblemClass
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 
-budget = 50000
+budget = 5000
 
 # To make your results reproducible (not required by the assignment), you could set the random seed by
 # `np.random.seed(some integer, e.g., 42)`
@@ -16,11 +16,12 @@ budget = 50000
 @dataclass
 class HyperParams:
     pop_size: int = 100
-    n_selections: int = 200
+    n_selections: int = 50
     mutation_rate: float = 0.05
     crossover_probability: float = 0.1
     crossover_points: int= 2
-    num_elite_parents: int = 10
+    num_elite_parents: int = 50
+    boltzman_temp: int= 100
 
 hyper_params = HyperParams()
 
@@ -67,25 +68,27 @@ def mutation(p, mutation_rate):
     p_mutated = [b ^ 1 if np.random.rand() <= mutation_rate else b for b in p]
     return p_mutated
 
-# Using the Fitness proportional selection
-# TODO if i'm not learning chnage me to boltzman or smth
-def mating_selection(parents, parents_f, n_selections) :   
-    parents_f_np= np.array(parents_f)
-    fitness_sum= sum(parents_f)
-    parents_pdf = parents_f_np / fitness_sum
+# Using Boltzmann selection
+def mating_selection(parents, parents_f, n_selections, temperature):
+    parents_f_np = np.array(parents_f)
+    scaled_fitness = np.exp(parents_f_np / temperature)
+    fitness_sum = np.sum(scaled_fitness)
+    parents_pdf = scaled_fitness / fitness_sum  # Probability distribution for selection
 
-    selected_parents= []
+    selected_parents = []
     for _ in range(n_selections):
         parent_indices = np.arange(len(parents))
+        # Select parents based on the Boltzmann-scaled probabilities
         p1_idx = np.random.choice(parent_indices, p=parents_pdf)
         p2_idx = np.random.choice(parent_indices, p=parents_pdf)
 
         # Select the parents based on the sampled indices
         p1 = parents[p1_idx]
         p2 = parents[p2_idx]
-        selected_parents.append((p1,p2))
+        selected_parents.append((p1, p2))
 
     return selected_parents
+
 
 
 
@@ -111,7 +114,7 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         unique_individuals_per_generation.append(unique_individuals)
 
         # Selection, crossover, and mutation
-        selected_parents = mating_selection(parents, parents_fitness, hyper_params.n_selections)
+        selected_parents = mating_selection(parents, parents_fitness, hyper_params.n_selections, hyper_params.boltzman_temp)
         offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 
@@ -129,8 +132,14 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         
         # New generation 
         num_offsprings_to_next_gen = hyper_params.pop_size - hyper_params.num_elite_parents
-        parents = elite_parents + offsprings[0:num_offsprings_to_next_gen]
-        parents_fitness = [problem(solution) for solution in parents]
+        selected_offsprings= offsprings[0:num_offsprings_to_next_gen]
+        parents = elite_parents + selected_offsprings
+
+        selected_parents_fitness= [parents_fitness[i] for i in top_indices]
+        selected_offsprings_fitness= [problem(solution) for solution in selected_offsprings]
+        parents_fitness =  selected_parents_fitness+ selected_offsprings_fitness
+
+        print(len(parents), len(parents_fitness))
 
 
 
