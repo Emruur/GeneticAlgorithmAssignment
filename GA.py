@@ -16,22 +16,50 @@ budget = 5000
 @dataclass
 class HyperParams:
     pop_size: int = 100
-    n_selections: int = 100
-    mutation_rate: float = 0.01
+    n_selections: int = 200
+    mutation_rate: float = 0.05
     crossover_probability: float = 0.1
+    crossover_points: int= 2
 
 hyper_params = HyperParams()
 
-# Uniform Crossover
-def crossover(p1, p2):
-    return [np.random.choice([b1,b2]) for b1,b2 in zip(p1,p2)]
 
-# Single-point crossover
-def single_point_crossover(p1, p2):
-    crossover_point = np.random.randint(0, len(p1))
-    child1 = np.concatenate((p1[crossover_point:], p2[:crossover_point]), axis = 0)
-    # child2 = np.concatenate((p2[crossover_point:], p1[:crossover_point]), axis = 0)
-    return child1.astype(int).tolist()# , child2
+
+def crossover(p1, p2, num_crossover_points=1):
+    """
+    Perform crossover with a specified number of crossover points.
+
+    Parameters:
+    - p1: Parent 1 (list or array)
+    - p2: Parent 2 (list or array)
+    - num_crossover_points: Number of crossover points (int)
+
+    Returns:
+    - child1: The offspring generated from crossover
+    """
+    if num_crossover_points < 1 or num_crossover_points >= len(p1):
+        raise ValueError("Number of crossover points must be between 1 and len(p1) - 1.")
+    
+    # Generate unique random crossover points and sort them
+    crossover_points = sorted(np.random.choice(range(1, len(p1)), num_crossover_points, replace=False))
+    
+    # Perform crossover
+    child1 = []
+    toggle = True  # Toggles between parents
+    last_point = 0
+    for point in crossover_points:
+        if toggle:
+            child1.extend(p1[last_point:point])
+        else:
+            child1.extend(p2[last_point:point])
+        toggle = not toggle
+        last_point = point
+
+    # Add the remaining segment from the toggled parent
+    child1.extend(p1[last_point:] if toggle else p2[last_point:])
+    
+    return np.array(child1).astype(int).tolist()
+
 
 
 # Standard bit mutation using mutation rate p
@@ -77,7 +105,7 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
 
         # Selection, crossover, and mutation
         selected_parents = mating_selection(parents, parents_fitness, hyper_params.n_selections)
-        offsprings = [single_point_crossover(p1, p2) for p1, p2 in selected_parents]
+        offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 
         parents = offsprings + parents
@@ -126,7 +154,7 @@ if __name__ == "__main__":
 
 
     F18, _logger = create_problem(dimension=50, fid=18)
-    for run in range(1): 
+    for run in range(20): 
         studentnumber1_studentnumber2_GA(F18)
         F18.reset() # it is necessary to reset the problem after each independent run
     _logger.close() # after all runs, it is necessary to close the logger to make sure all data are written to the folder
