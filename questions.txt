@@ -1,0 +1,19 @@
+Questions:
+
+1. LABS
+
+* What should the algorithm be able to achieve in 5000 iterations? We have 4 (ocassionally 5), but we know that theoretical 
+max is 7.
+
+HELP US IMPROVE?
+
+2. N-Queens
+
+* What does score -200 means? 
+* Is 0 what should be achieved?
+* What does y = 5 or 6 mean?
+* Where to find 0 from the plot?
+
+* HOW CAN WE CHANGE REPRESENTTION IF WE CANNOT????????!
+We understand we could change the way the initial poplation looks. How can we know how to change it if we have no clue how the 
+fitness function works?
