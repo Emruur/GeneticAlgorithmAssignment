@@ -25,6 +25,14 @@ hyper_params = HyperParams()
 def crossover(p1, p2):
     return [np.random.choice([b1,b2]) for b1,b2 in zip(p1,p2)]
 
+# Single-point crossover
+def single_point_crossover(p1, p2):
+    crossover_point = np.random(0, len(p1))
+    child1 = p1[crossover_point:] + p2[:crossover_point]
+    child2 = p2[crossover_point:] + p1[:crossover_point]
+    return child1, child2
+
+
 # Standard bit mutation using mutation rate p
 def mutation(p, mutation_rate):
     p_mutated = [b ^ 1 if np.random.rand() <= mutation_rate else b for b in p]
@@ -65,7 +73,8 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
     while problem.state.evaluations < budget:
         # please implement the mutation, crossover, selection here
         selected_parents= mating_selection(parents, parents_fitness, hyper_params.n_selections)
-        offsprings= [crossover(selected_parent[0], selected_parent[1]) for selected_parent in selected_parents]
+        # offsprings= [crossover(selected_parent[0], selected_parent[1]) for selected_parent in selected_parents]
+        offsprings= [single_point_crossover(selected_parent[0], selected_parent[1]) for selected_parent in selected_parents]
         offsprings= [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 
         parents= offsprings
