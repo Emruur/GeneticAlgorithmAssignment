@@ -9,10 +9,10 @@ HELP US IMPROVE?
 
 2. N-Queens
 
-* What does score -200 means? 
-* Is 0 what should be achieved?
-* What does y = 5 or 6 mean?
-* Where to find 0 from the plot?
+* What does score -200 means?  MANY conflicts
+* Is 0 what should be achieved? Yes!!
+* What does y = 5 or 6 mean? It's the numbers of queens
+* Where to find 0 from the plot? It's the result of problem(solution)
 
 * HOW CAN WE CHANGE REPRESENTTION IF WE CANNOT????????!
 We understand we could change the way the initial poplation looks. How can we know how to change it if we have no clue how the 
