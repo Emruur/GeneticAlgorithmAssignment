@@ -19,10 +19,10 @@ class HyperParams:
     n_selections: int = 200
     mutation_rate: float = 0.05
     crossover_probability: float = 0.1
-    crossover_points: int= 4
+    crossover_points: int= 2
+    num_elite_parents: int = 10
 
 hyper_params = HyperParams()
-
 
 
 def crossover(p1, p2, num_crossover_points=1):
@@ -115,13 +115,24 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 
-        parents = offsprings + parents
+        # parents = offsprings + parents
+        # parents_fitness = [problem(solution) for solution in parents]
+
+        # # ELITIST SELECTION
+        # top_indices = np.argsort(parents_fitness)[-hyper_params.pop_size:]  # Keep the best individuals
+        # parents = [parents[i] for i in top_indices]
+        # parents_fitness = [parents_fitness[i] for i in top_indices]
+
+        # Second approach to elitism: first select best parents than add babies
+        top_indices = np.argsort(parents_fitness)[-hyper_params.num_elite_parents:]  # Keep the best individuals
+        elite_parents = [parents[i] for i in top_indices]
+        
+        # New generation 
+        num_offsprings_to_next_gen = hyper_params.pop_size - hyper_params.num_elite_parents
+        parents = elite_parents + offsprings[0:num_offsprings_to_next_gen]
         parents_fitness = [problem(solution) for solution in parents]
 
-        # ELITIST SELECTION
-        top_indices = np.argsort(parents_fitness)[-hyper_params.pop_size:]  # Keep the best individuals
-        parents = [parents[i] for i in top_indices]
-        parents_fitness = [parents_fitness[i] for i in top_indices]
+
 
     # Plot fitness metrics
     plt.figure(figsize=(10, 6))
