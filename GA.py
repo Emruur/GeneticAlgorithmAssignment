@@ -8,7 +8,7 @@ from ioh import get_problem, logger, ProblemClass
 from dataclasses import dataclass
 import matplotlib.pyplot as plt
 
-budget = 5000
+budget = 50000
 
 # To make your results reproducible (not required by the assignment), you could set the random seed by
 # `np.random.seed(some integer, e.g., 42)`
@@ -19,7 +19,7 @@ class HyperParams:
     n_selections: int = 200
     mutation_rate: float = 0.05
     crossover_probability: float = 0.1
-    crossover_points: int= 2
+    crossover_points: int= 4
 
 hyper_params = HyperParams()
 
@@ -93,6 +93,8 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
     # Store fitness metrics
     best_fitness_per_generation = []
     avg_fitness_per_generation = []
+    min_fitness_per_generation = []  # To track the minimum fitness
+    unique_individuals_per_generation = []  # To track the number of unique individuals
 
     # Initial population
     parents = [np.random.randint(2, size=problem.meta_data.n_variables) for _ in range(hyper_params.pop_size)]
@@ -102,6 +104,11 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         # Log fitness metrics
         best_fitness_per_generation.append(max(parents_fitness))
         avg_fitness_per_generation.append(np.mean(parents_fitness))
+        min_fitness_per_generation.append(min(parents_fitness))  # Log the minimum fitness
+        
+        # Count unique individuals
+        unique_individuals = len(np.unique(parents, axis=0))
+        unique_individuals_per_generation.append(unique_individuals)
 
         # Selection, crossover, and mutation
         selected_parents = mating_selection(parents, parents_fitness, hyper_params.n_selections)
@@ -116,14 +123,26 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         parents = [parents[i] for i in top_indices]
         parents_fitness = [parents_fitness[i] for i in top_indices]
 
-    # Plot results
+    # Plot fitness metrics
+    plt.figure(figsize=(10, 6))
     plt.plot(best_fitness_per_generation, label="Best Fitness")
     plt.plot(avg_fitness_per_generation, label="Average Fitness")
+    plt.plot(min_fitness_per_generation, label="Min Fitness", linestyle="--")
     plt.xlabel("Generation")
     plt.ylabel("Fitness")
     plt.legend()
     plt.title("Fitness Progression")
     plt.show()
+
+    # Plot unique individuals
+    plt.figure(figsize=(10, 6))
+    plt.plot(unique_individuals_per_generation, label="Unique Individuals", color="purple", linestyle="-.")
+    plt.xlabel("Generation")
+    plt.ylabel("Number of Unique Individuals")
+    plt.legend()
+    plt.title("Population Diversity Over Generations")
+    plt.show()
+
 
 
 def create_problem(dimension: int, fid: int) -> Tuple[ioh.problem.PBO, ioh.logger.Analyzer]:
