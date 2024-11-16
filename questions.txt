@@ -9,6 +9,17 @@ HELP US IMPROVE?
 
 2. N-Queens
 
+  s1= np.array([1,0,0,1])
+    s2= np.array([1,0,1,0])
+    s3= np.array([1,1,0,0])
+    s4= np.array([0,0,1,1])
+    s5= np.array([0,1,0,1])
+    print(problem(s1))
+    print(problem(s2))
+    print(problem(s3))
+    print(problem(s4))
+    print(problem(s5))?
+
 * What does score -200 means?  MANY conflicts
 * Is 0 what should be achieved? Yes!!
 * What does y = 5 or 6 mean? It's the numbers of queens

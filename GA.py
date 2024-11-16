@@ -13,6 +13,8 @@ budget = 5000
 # To make your results reproducible (not required by the assignment), you could set the random seed by
 # `np.random.seed(some integer, e.g., 42)`
 
+
+
 @dataclass
 class HyperParams:
     pop_size: int = 100
@@ -93,6 +95,19 @@ def mating_selection(parents, parents_f, n_selections, temperature):
 
 
 def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
+
+    s1= np.array([1,0,0,1])
+    s2= np.array([1,0,1,0])
+    s3= np.array([1,1,0,0])
+    s4= np.array([0,0,1,1])
+    s5= np.array([0,1,0,1])
+    print(problem(s1))
+    print(problem(s2))
+    print(problem(s3))
+    print(problem(s4))
+    print(problem(s5))
+
+    exit()
     # Store fitness metrics
     best_fitness_per_generation = []
     avg_fitness_per_generation = []
@@ -139,10 +154,9 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         selected_offsprings_fitness= [problem(solution) for solution in selected_offsprings]
         parents_fitness =  selected_parents_fitness+ selected_offsprings_fitness
 
-        print(len(parents), len(parents_fitness))
 
 
-
+    '''
     # Plot fitness metrics
     plt.figure(figsize=(10, 6))
     plt.plot(best_fitness_per_generation, label="Best Fitness")
@@ -162,6 +176,8 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
     plt.legend()
     plt.title("Population Diversity Over Generations")
     plt.show()
+    '''
+    
 
 
 
@@ -190,19 +206,17 @@ if __name__ == "__main__":
     ## CHAT GPT SETUP A COUNTING ONES PROBLEM TO SEE IF MU GA IMPLEMENTATION IS WORKING JUST GIVE ME THIS PART
     # Create a Counting Ones problem with dimension 50 and attach a logger
 
-
-
+    '''
     F18, _logger = create_problem(dimension=50, fid=18)
     for run in range(20): 
         studentnumber1_studentnumber2_GA(F18)
         F18.reset() # it is necessary to reset the problem after each independent run
     _logger.close() # after all runs, it is necessary to close the logger to make sure all data are written to the folder
-
-    exit()
+    '''
 
     # create the N-Queens problem and the data logger
-    F23, _logger = create_problem(dimension=49, fid=23)
-    for run in range(20): 
+    F23, _logger = create_problem(dimension=4, fid=23)
+    for run in range(1): 
         studentnumber1_studentnumber2_GA(F23)
         F23.reset()
     _logger.close()
