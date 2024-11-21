@@ -17,13 +17,12 @@ budget = 5000
 
 @dataclass
 class HyperParams:
-    pop_size: int = 100
-    n_selections: int = 50
-    mutation_rate: float = 0.05
-    crossover_probability: float = 0.1
-    crossover_points: int= 2
-    num_elite_parents: int = 50
-    boltzman_temp: int= 100
+    pop_size: int = 100 #10,300
+    num_offsprings: int = 50 # = pop_size - num_elite_parents
+    mutation_rate: float = 0.05 # 0.001 , 0.1
+    crossover_points: int= 2# 1-5
+    num_elite_parents: int = 50 # <= 3*pop_size/4 , >= pop_size/4  
+    boltzman_temp: int= 100 # u figure it out chat gpt
 
 hyper_params = HyperParams()
 
@@ -92,9 +91,7 @@ def mating_selection(parents, parents_f, n_selections, temperature):
     return selected_parents
 
 
-
-
-def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
+def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> float:
 
     best_fitness_per_generation = []
     avg_fitness_per_generation = []
@@ -116,7 +113,7 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
         unique_individuals_per_generation.append(unique_individuals)
 
         # Selection, crossover, and mutation
-        selected_parents = mating_selection(parents, parents_fitness, hyper_params.n_selections, hyper_params.boltzman_temp)
+        selected_parents = mating_selection(parents, parents_fitness, hyper_params.num_offsprings, hyper_params.boltzman_temp)
         offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 

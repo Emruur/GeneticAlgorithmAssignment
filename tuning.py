@@ -12,12 +12,6 @@ budget = 1000000
 # To make your results reproducible (not required by the assignment), you could set the random seed by
 # `np.random.seed(some integer, e.g., 42)`
 
-# Hyperparameters to tune, e.g.
-hyperparameter_space = {
-    "population_size": [50, 100, 200],
-    "mutation_rate": [0.01, 0.05, 0.1],
-    "crossover_rate": [0.5, 0.7, 0.9]
-}
 
 # Hyperparameter tuning function
 def tune_hyperparameters() -> List:
