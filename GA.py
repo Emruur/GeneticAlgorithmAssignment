@@ -96,19 +96,6 @@ def mating_selection(parents, parents_f, n_selections, temperature):
 
 def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
 
-    s1= np.array([1,0,0,1])
-    s2= np.array([1,0,1,0])
-    s3= np.array([1,1,0,0])
-    s4= np.array([0,0,1,1])
-    s5= np.array([0,1,0,1])
-    print(problem(s1))
-    print(problem(s2))
-    print(problem(s3))
-    print(problem(s4))
-    print(problem(s5))
-
-    exit()
-    # Store fitness metrics
     best_fitness_per_generation = []
     avg_fitness_per_generation = []
     min_fitness_per_generation = []  # To track the minimum fitness
@@ -156,7 +143,8 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
 
 
 
-    '''
+    
+    
     # Plot fitness metrics
     plt.figure(figsize=(10, 6))
     plt.plot(best_fitness_per_generation, label="Best Fitness")
@@ -176,7 +164,48 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> None:
     plt.legend()
     plt.title("Population Diversity Over Generations")
     plt.show()
-    '''
+
+    def plot_chessboard(solution, fitness):
+        """
+        Plots the N-Queens chessboard for a binary vector solution (0 indicates queen's position).
+        
+        :param solution: Binary vector representing the chessboard.
+        :param fitness: Fitness score of the solution.
+        """
+        n = int(np.sqrt(len(solution)))  # Determine the size of the board (7 for a 7x7 board)
+        board = np.ones((n, n))  # Create a white board (all cells initialized to 1)
+        
+        # Place queens where solution has 0s
+        for idx, value in enumerate(solution):
+            if value == 0:
+                row, col = divmod(idx, n)
+                board[row, col] = 0  # Indicate the queen's position with 0
+
+        # Plot the chessboard
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax.imshow(board, cmap="gray", extent=(0, n, 0, n))  # Chessboard grid
+        
+        # Draw the grid lines
+        ax.set_xticks(np.arange(0, n + 1, 1))
+        ax.set_yticks(np.arange(0, n + 1, 1))
+        ax.grid(color='white', linestyle='-', linewidth=3)
+        ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+        
+        # Add queens as red 'Q's
+        for idx, value in enumerate(solution):
+            if value == 0:
+                row, col = divmod(idx, n)
+                #ax.text(col + 0.5, n - row - 0.5, 'Q', ha='center', va='center', fontsize=20, color='red')
+
+        plt.title(f"Best Solution Chessboard (Fitness: {fitness})", fontsize=16)
+        plt.show()
+
+
+    best_solution_idx = np.argmax(parents_fitness)
+    best_solution = parents[best_solution_idx]
+    best_fitness = parents_fitness[best_solution_idx]
+    plot_chessboard(best_solution, best_fitness)
+
     
 
 
@@ -215,8 +244,8 @@ if __name__ == "__main__":
     '''
 
     # create the N-Queens problem and the data logger
-    F23, _logger = create_problem(dimension=4, fid=23)
-    for run in range(1): 
+    F23, _logger = create_problem(dimension=49, fid=23)
+    for run in range(20): 
         studentnumber1_studentnumber2_GA(F23)
         F23.reset()
     _logger.close()
