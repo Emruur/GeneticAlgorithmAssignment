@@ -1,0 +1,17 @@
+{
+	"version": "0.3.17", 
+	"suite": "unknown_suite", 
+	"function_id": 23, 
+	"function_name": "NQueens", 
+	"maximization": true, 
+	"algorithm": {"name": "genetic_algorithm", "info": "Practical assignment of the EA course"},
+	"attributes": ["evaluations", "raw_y"],
+	"scenarios": [
+		{"dimension": 49,
+		"path": "data_f23_NQueens/IOHprofiler_f23_DIM49.dat",
+		"runs": [
+			{"instance": 1, "evals": 5000, "best": {"evals": 3478, "y": 6, "x": [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0]}},
+			{"instance": 1, "evals": 5000, "best": {"evals": 3313, "y": 5, "x": [0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}}
+		]}
+	]
+}

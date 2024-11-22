@@ -17,14 +17,14 @@ budget = 5000
 
 @dataclass
 class HyperParams:
-    pop_size: int = 100 #10,300
-    num_offsprings: int = 50 # = pop_size - num_elite_parents
-    mutation_rate: float = 0.05 # 0.001 , 0.1
-    crossover_points: int= 2# 1-5
-    num_elite_parents: int = 50 # <= 3*pop_size/4 , >= pop_size/4  
-    boltzman_temp: int= 100 # u figure it out chat gpt
+    pop_size: int = 55 #10,300
+    num_offsprings: int = 14 # = pop_size - num_elite_parents
+    mutation_rate: float = 0.0211 # 0.001 , 0.1
+    crossover_points: int= 5# 1-5
+    num_elite_parents: int = 41 # <= 3*pop_size/4 , >= pop_size/4  
+    boltzman_temp: int= 200 # u figure it out chat gpt
 
-hyper_params = HyperParams()
+hyper_params_default = HyperParams(pop_size=10, num_offsprings=5, mutation_rate=0.030757723064132023, crossover_points=1, num_elite_parents=5, boltzman_temp=200)
 
 
 def crossover(p1, p2, num_crossover_points=1):
@@ -91,7 +91,7 @@ def mating_selection(parents, parents_f, n_selections, temperature):
     return selected_parents
 
 
-def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> float:
+def s4402146_s4436385(problem: ioh.problem.PBO, hyper_params: HyperParams= hyper_params_default, verbose= False, fid= None) -> float:
 
     best_fitness_per_generation = []
     avg_fitness_per_generation = []
@@ -117,13 +117,6 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> float:
         offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
 
-        # parents = offsprings + parents
-        # parents_fitness = [problem(solution) for solution in parents]
-
-        # # ELITIST SELECTION
-        # top_indices = np.argsort(parents_fitness)[-hyper_params.pop_size:]  # Keep the best individuals
-        # parents = [parents[i] for i in top_indices]
-        # parents_fitness = [parents_fitness[i] for i in top_indices]
 
         # Second approach to elitism: first select best parents than add babies
         top_indices = np.argsort(parents_fitness)[-hyper_params.num_elite_parents:]  # Keep the best individuals
@@ -139,69 +132,71 @@ def studentnumber1_studentnumber2_GA(problem: ioh.problem.PBO) -> float:
         parents_fitness =  selected_parents_fitness+ selected_offsprings_fitness
 
 
-
-    
-    
-    # Plot fitness metrics
-    plt.figure(figsize=(10, 6))
-    plt.plot(best_fitness_per_generation, label="Best Fitness")
-    plt.plot(avg_fitness_per_generation, label="Average Fitness")
-    plt.plot(min_fitness_per_generation, label="Min Fitness", linestyle="--")
-    plt.xlabel("Generation")
-    plt.ylabel("Fitness")
-    plt.legend()
-    plt.title("Fitness Progression")
-    plt.show()
-
-    # Plot unique individuals
-    plt.figure(figsize=(10, 6))
-    plt.plot(unique_individuals_per_generation, label="Unique Individuals", color="purple", linestyle="-.")
-    plt.xlabel("Generation")
-    plt.ylabel("Number of Unique Individuals")
-    plt.legend()
-    plt.title("Population Diversity Over Generations")
-    plt.show()
-
-    def plot_chessboard(solution, fitness):
-        """
-        Plots the N-Queens chessboard for a binary vector solution (0 indicates queen's position).
-        
-        :param solution: Binary vector representing the chessboard.
-        :param fitness: Fitness score of the solution.
-        """
-        n = int(np.sqrt(len(solution)))  # Determine the size of the board (7 for a 7x7 board)
-        board = np.ones((n, n))  # Create a white board (all cells initialized to 1)
-        
-        # Place queens where solution has 0s
-        for idx, value in enumerate(solution):
-            if value == 0:
-                row, col = divmod(idx, n)
-                board[row, col] = 0  # Indicate the queen's position with 0
-
-        # Plot the chessboard
-        fig, ax = plt.subplots(figsize=(8, 8))
-        ax.imshow(board, cmap="gray", extent=(0, n, 0, n))  # Chessboard grid
-        
-        # Draw the grid lines
-        ax.set_xticks(np.arange(0, n + 1, 1))
-        ax.set_yticks(np.arange(0, n + 1, 1))
-        ax.grid(color='white', linestyle='-', linewidth=3)
-        ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
-        
-        # Add queens as red 'Q's
-        for idx, value in enumerate(solution):
-            if value == 0:
-                row, col = divmod(idx, n)
-                #ax.text(col + 0.5, n - row - 0.5, 'Q', ha='center', va='center', fontsize=20, color='red')
-
-        plt.title(f"Best Solution Chessboard (Fitness: {fitness})", fontsize=16)
+    best_solution_idx = np.argmax(parents_fitness)
+    best_fitness = parents_fitness[best_solution_idx]
+    if verbose:
+        # Plot fitness metrics
+        plt.figure(figsize=(10, 6))
+        plt.plot(best_fitness_per_generation, label="Best Fitness")
+        plt.plot(avg_fitness_per_generation, label="Average Fitness")
+        plt.plot(min_fitness_per_generation, label="Min Fitness", linestyle="--")
+        plt.xlabel("Generation")
+        plt.ylabel("Fitness")
+        plt.legend()
+        plt.title("Fitness Progression")
         plt.show()
 
+        # Plot unique individuals
+        plt.figure(figsize=(10, 6))
+        plt.plot(unique_individuals_per_generation, label="Unique Individuals", color="purple", linestyle="-.")
+        plt.xlabel("Generation")
+        plt.ylabel("Number of Unique Individuals")
+        plt.legend()
+        plt.title("Population Diversity Over Generations")
+        plt.show()
 
-    best_solution_idx = np.argmax(parents_fitness)
-    best_solution = parents[best_solution_idx]
-    best_fitness = parents_fitness[best_solution_idx]
-    plot_chessboard(best_solution, best_fitness)
+        def plot_chessboard(solution, fitness):
+            """
+            Plots the N-Queens chessboard for a binary vector solution (0 indicates queen's position).
+            
+            :param solution: Binary vector representing the chessboard.
+            :param fitness: Fitness score of the solution.
+            """
+            n = int(np.sqrt(len(solution)))  # Determine the size of the board (7 for a 7x7 board)
+            board = np.ones((n, n))  # Create a white board (all cells initialized to 1)
+            
+            # Place queens where solution has 0s
+            for idx, value in enumerate(solution):
+                if value == 0:
+                    row, col = divmod(idx, n)
+                    board[row, col] = 0  # Indicate the queen's position with 0
+
+            # Plot the chessboard
+            fig, ax = plt.subplots(figsize=(8, 8))
+            ax.imshow(board, cmap="gray", extent=(0, n, 0, n))  # Chessboard grid
+            
+            # Draw the grid lines
+            ax.set_xticks(np.arange(0, n + 1, 1))
+            ax.set_yticks(np.arange(0, n + 1, 1))
+            ax.grid(color='white', linestyle='-', linewidth=3)
+            ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
+            
+            # Add queens as red 'Q's
+            for idx, value in enumerate(solution):
+                if value == 0:
+                    row, col = divmod(idx, n)
+                    #ax.text(col + 0.5, n - row - 0.5, 'Q', ha='center', va='center', fontsize=20, color='red')
+
+            plt.title(f"Best Solution Chessboard (Fitness: {fitness})", fontsize=16)
+            plt.show()
+
+        if fid == 23:
+            best_solution = parents[best_solution_idx]
+            best_fitness = parents_fitness[best_solution_idx]
+
+            plot_chessboard(best_solution, best_fitness)
+
+    return best_fitness
 
     
 
@@ -229,20 +224,19 @@ if __name__ == "__main__":
     # this how you run your algorithm with 20 repetitions/independent run
     # create the LABS problem and the data logger
 
-    ## CHAT GPT SETUP A COUNTING ONES PROBLEM TO SEE IF MU GA IMPLEMENTATION IS WORKING JUST GIVE ME THIS PART
     # Create a Counting Ones problem with dimension 50 and attach a logger
 
-    '''
     F18, _logger = create_problem(dimension=50, fid=18)
-    for run in range(20): 
-        studentnumber1_studentnumber2_GA(F18)
+    for run in range(1): 
+        best_fitness= s4402146_s4436385(F18, verbose=True)
+        print(f"LABS run {run} best fitness {best_fitness}")
         F18.reset() # it is necessary to reset the problem after each independent run
     _logger.close() # after all runs, it is necessary to close the logger to make sure all data are written to the folder
-    '''
 
     # create the N-Queens problem and the data logger
     F23, _logger = create_problem(dimension=49, fid=23)
-    for run in range(20): 
-        studentnumber1_studentnumber2_GA(F23)
+    for run in range(1): 
+        best_fitness= s4402146_s4436385(F23,verbose=True, fid=23)
+        print(f"N-QUEENS run {run} best fitness {best_fitness}")
         F23.reset()
     _logger.close()
