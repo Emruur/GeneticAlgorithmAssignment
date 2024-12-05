@@ -24,8 +24,9 @@ class HyperParams:
     num_elite_parents: int = 41 # <= 3*pop_size/4 , >= pop_size/4  
     boltzman_temp: int= 200 # u figure it out chat gpt
 
-hyper_params_default = HyperParams(pop_size=10, num_offsprings=5, mutation_rate=0.030757723064132023, crossover_points=1, num_elite_parents=5, boltzman_temp=200)
-
+#hyper_params_default = HyperParams(pop_size=10, num_offsprings=5, mutation_rate=0.030757723064132023, crossover_points=1, num_elite_parents=5, boltzman_temp=200)
+#hyper_params_default = HyperParams(pop_size=46, num_offsprings=12, mutation_rate=0.020193969567736114, crossover_points=5, num_elite_parents=34, boltzman_temp=200)
+hyper_params_default= HyperParams()
 
 def crossover(p1, p2, num_crossover_points=1):
     """
@@ -116,7 +117,6 @@ def s4402146_s4436385(problem: ioh.problem.PBO, hyper_params: HyperParams= hyper
         selected_parents = mating_selection(parents, parents_fitness, hyper_params.num_offsprings, hyper_params.boltzman_temp)
         offsprings = [crossover(p1, p2, hyper_params.crossover_points) for p1, p2 in selected_parents]
         offsprings = [mutation(offspring, hyper_params.mutation_rate) for offspring in offsprings]
-
 
         # Second approach to elitism: first select best parents than add babies
         top_indices = np.argsort(parents_fitness)[-hyper_params.num_elite_parents:]  # Keep the best individuals
@@ -227,16 +227,16 @@ if __name__ == "__main__":
     # Create a Counting Ones problem with dimension 50 and attach a logger
 
     F18, _logger = create_problem(dimension=50, fid=18)
-    for run in range(1): 
-        best_fitness= s4402146_s4436385(F18, verbose=True)
+    for run in range(20): 
+        best_fitness= s4402146_s4436385(F18, verbose=False)
         print(f"LABS run {run} best fitness {best_fitness}")
         F18.reset() # it is necessary to reset the problem after each independent run
     _logger.close() # after all runs, it is necessary to close the logger to make sure all data are written to the folder
 
     # create the N-Queens problem and the data logger
     F23, _logger = create_problem(dimension=49, fid=23)
-    for run in range(1): 
-        best_fitness= s4402146_s4436385(F23,verbose=True, fid=23)
+    for run in range(20): 
+        best_fitness= s4402146_s4436385(F23,verbose=False, fid=23)
         print(f"N-QUEENS run {run} best fitness {best_fitness}")
         F23.reset()
     _logger.close()
